@@ -1,0 +1,52 @@
+/* Zerar margens e garantir que o corpo ocupe 100% sem barras de rolagem */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000; /* Fundo preto puro para destacar o 3D */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* O container onde o Three.js vai morar */
+#canvas-container {
+    position: fixed; /* Fixed garante que ele não saia do lugar */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; 
+    display: block;
+}
+
+/* Garante que o canvas gerado pelo Three.js ocupe todo o espaço */
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    touch-action: none; /* Melhora a resposta do mouse/touch nos controles */
+}
+
+/* Camada para textos ou menus que ficam NA FRENTE do 3D */
+.ui-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #39ff14; /* Verde CRT */
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+    z-index: 10;
+    
+    /* IMPORTANTE: Isso permite que você clique NO PC através do texto */
+    pointer-events: none; 
+    
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    text-align: center;
+    text-transform: uppercase;
+}
