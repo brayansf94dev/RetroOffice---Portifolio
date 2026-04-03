@@ -1,131 +1,190 @@
 import * as THREE from 'three';
-import { criarComputador } from './computador.js';
-import { configurarControles } from './controles.js'; // Novo import
+import { criarComputador }               from './computador.js';
+import { configurarControles }           from './controles.js';
+import { criarEstrelas, criarEsquadrao } from './cenario.js';
+import { gerenciarCamera }               from './camera.js';
 
-// --- CONFIGURAÇÃO INICIAL ---
-const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x000000, 2, 12);
+// ── CENA ─────────────────────────────────────────────────────────────────────
+const scene    = new THREE.Scene();
+const camera   = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setSize(innerWidth, innerHeight);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+const canvas = renderer.domElement;
 
+// ── OBJETOS ──────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+const estrelas      = criarEstrelas();       scene.add(estrelas);
+const esquadrao     = criarEsquadrao(scene);
+const meuComputador = criarComputador();     scene.add(meuComputador);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ 
-    antialias: true, // N64 tinha AA por hardware, então deixamos TRUE
-    precision: 'lowp' 
+let telaMesh = null;
+meuComputador.traverse(obj => {
+    if (obj.isMesh && obj.geometry.type === 'PlaneGeometry') telaMesh = obj;
 });
 
-// ADICIONE ESTA LINHA AQUI:
-renderer.setPixelRatio(window.devicePixelRatio * 1.5);
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+// ── CÂMERA + CONTROLES ────────────────────────────────────────────────────────
+const controls     = configurarControles(camera, canvas);
+camera.position.set(0, 2, 7);
+const configCamera = gerenciarCamera(camera, controls);
 
-const container = document.getElementById('canvas-container');
-container.appendChild(renderer.domElement);
+// ── FIT OVERLAY ───────────────────────────────────────────────────────────────
+const xpOverlay = document.getElementById('xp-overlay');
+const xpWin     = document.getElementById('xp-win');
+const _v        = new THREE.Vector3();
 
-camera.position.z = 7; // Afastei um pouco mais a câmera
-camera.position.y = 2;
-camera.lookAt(0, 0, 0);
-
-// --- ILUMINAÇÃO ---
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(5, 5, 5);
-scene.add(directionalLight);
-
-const meuComputador = criarComputador();
-scene.add(meuComputador);
-
-// 2. Inicializar os controles
-const controls = configurarControles(camera, renderer.domElement);
-
-const textureLoader = new THREE.TextureLoader();
-
-// --- CONFIGURAÇÃO DO FUNDO ---
-scene.background = new THREE.Color(0x000000); 
-
-const vertices = [];
-for (let i = 0; i < 15000; i++) {
-    // Espalhamos em um raio de 600 para garantir que elas envolvam tudo
-    const x = THREE.MathUtils.randFloatSpread(600);
-    const y = THREE.MathUtils.randFloatSpread(600);
-    const z = THREE.MathUtils.randFloatSpread(600);
-    vertices.push(x, y, z);
+function fitOverlay() {
+    if (!telaMesh) return;
+    telaMesh.updateMatrixWorld(true);
+    const hw = 0.8, hh = 0.65;
+    const corners = [
+        new THREE.Vector3(-hw,-hh,0), new THREE.Vector3(hw,-hh,0),
+        new THREE.Vector3(-hw, hh,0), new THREE.Vector3(hw, hh,0),
+    ];
+    let x0=Infinity, x1=-Infinity, y0=Infinity, y1=-Infinity;
+    corners.forEach(c => {
+        _v.copy(c).applyMatrix4(telaMesh.matrixWorld).project(camera);
+        const px=(_v.x*.5+.5)*innerWidth, py=(-_v.y*.5+.5)*innerHeight;
+        if(px<x0)x0=px; if(px>x1)x1=px; if(py<y0)y0=py; if(py>y1)y1=py;
+    });
+    xpWin.style.left=x0+'px'; xpWin.style.top=y0+'px';
+    xpWin.style.width=(x1-x0)+'px'; xpWin.style.height=(y1-y0)+'px';
+    xpWin.style.fontSize='11px';
 }
 
-const geometriaEstrelas = new THREE.BufferGeometry();
-geometriaEstrelas.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+// ── ABRIR / FECHAR ────────────────────────────────────────────────────────────
+let aberto = false;
 
-const materialEstrelas = new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.8,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.8,
-    // ISSO AQUI É O SEGREDO:
-    fog: false // Faz as estrelas ignorarem a neblina preta e brilharem no fundo!
-});
-
-const estrelas = new THREE.Points(geometriaEstrelas, materialEstrelas);
-scene.add(estrelas);
-
-// --- SISTEMA DE NAVES (ESQUADRÃO) ---
-const naves = [];
-const cores = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00]; // Vermelha, Verde, Azul, Amarela
-
-function criarNave(cor) {
-    const naveGeo = new THREE.ConeGeometry(0.1, 0.5, 3);
-    const naveMat = new THREE.MeshBasicMaterial({ color: cor, fog: false });
-    const mesh = new THREE.Mesh(naveGeo, naveMat);
-    
-    const luz = new THREE.PointLight(cor, 1, 5);
-    mesh.add(luz);
-    
-    scene.add(mesh);
-    
-    return {
-        mesh: mesh,
-        ativa: false,
-        timer: Math.random() * 1000, // Tempo de espera inicial aleatório
-        velocidade: 0.15 + Math.random() * 0.2 // Cada uma tem uma velocidade levemente diferente
-    };
+function abrirPortfolio() {
+    if (aberto) return;
+    aberto = true;
+    renderer.render(scene, camera);
+    fitOverlay();
+    xpOverlay.classList.add('vis');
+    document.getElementById('hint').classList.add('hide');
+    // Desabilita canvas para os botões da interface receberem os cliques
+    canvas.style.pointerEvents = 'none';
 }
 
-// Criar as 4 naves
-cores.forEach(cor => {
-    naves.push(criarNave(cor));
+function fecharPortfolio() {
+    if (!aberto) return;
+    aberto = false;
+    xpOverlay.classList.remove('vis');
+    // Reativa canvas para OrbitControls funcionar
+    canvas.style.pointerEvents = 'auto';
+}
+
+function ativarCameraLivre() {
+    fecharPortfolio();                      // fecha interface e reativa canvas
+    canvas.style.pointerEvents = 'auto';   // garante que canvas recebe eventos
+    configCamera.alternarModo('livre');
+}
+
+function voltarFoco() {
+    canvas.style.pointerEvents = 'none';   // desativa canvas enquanto portfolio está aberto
+    configCamera.alternarModo('foco');
+    setTimeout(abrirPortfolio, 2500);
+}
+
+// ── EVENT LISTENERS (dentro do módulo — sem problema de timing) ───────────────
+
+// Abas
+document.getElementById('xp-mb').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-tab]');
+    if (!btn) return;
+    document.querySelectorAll('#xp-mb button').forEach(b => b.classList.remove('act'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+    btn.classList.add('act');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('act');
+    if (btn.dataset.tab === 'skills') buildSkills();
 });
 
+// Skills
+const SKILLS = [
+    {n:'JavaScript',p:90},{n:'React/Next.js',p:85},{n:'Node.js',p:80},
+    {n:'TypeScript',p:75},{n:'Python',p:72},{n:'PostgreSQL',p:68},
+    {n:'Docker',p:60},{n:'Three.js',p:55}
+];
+let builtSkills = false;
+function buildSkills() {
+    if (builtSkills) return; builtSkills = true;
+    const c = document.getElementById('sk-list');
+    SKILLS.forEach((s, i) => {
+        const r = document.createElement('div'); r.className = 'skr';
+        r.innerHTML = `<span class="skn">${s.n}</span>`
+            + `<div class="skt"><div class="skf" style="width:${s.p}%;animation-delay:${i*.09}s"></div></div>`
+            + `<span class="skp">${s.p}%</span>`;
+        c.appendChild(r);
+    });
+}
+
+// Relógio
+function tick() {
+    const el = document.getElementById('xp-clock');
+    if (!el) return;
+    const d = new Date();
+    el.textContent = [d.getHours(),d.getMinutes(),d.getSeconds()]
+        .map(v => String(v).padStart(2,'0')).join(':');
+}
+tick(); setInterval(tick, 1000);
+
+// Botão fechar (✕)
+document.getElementById('btn-fechar').addEventListener('click', () => {
+    fecharPortfolio();
+    voltarFoco();
+});
+
+// Botão câmera livre
+document.getElementById('btn-camera').addEventListener('click', () => {
+    ativarCameraLivre();
+});
+
+// ESC fecha
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { fecharPortfolio(); voltarFoco(); }
+});
+
+// ── LOOP ──────────────────────────────────────────────────────────────────────
 function animate() {
     requestAnimationFrame(animate);
+    configCamera.atualizarCamera();
 
-    // --- LÓGICA DAS NAVES ---
-    naves.forEach((naveObj) => {
-        if (!naveObj.ativa) {
-            naveObj.timer--;
-            if (naveObj.timer <= 0) {
-                naveObj.ativa = true;
-                // Nascem em alturas (Y) e profundidades (Z) levemente diferentes para não colidirem
-                naveObj.mesh.position.set(-20, (Math.random() * 4), (Math.random() * 3));
-                naveObj.mesh.rotation.z = -Math.PI / 2;
+    estrelas.rotation.y += 0.0001;
+    esquadrao.forEach(nave => {
+        if (!nave.ativa) {
+            nave.timer--;
+            if (nave.timer <= 0) {
+                nave.ativa = true;
+                nave.mesh.position.set(-20, Math.random()*4+1, Math.random()>.5?3:-3);
+                nave.mesh.rotation.z = -Math.PI/2;
+                nave.mesh.material.opacity = 0;
             }
         } else {
-            naveObj.mesh.position.x += naveObj.velocidade;
-            naveObj.mesh.rotation.x += 0.1;
-
-            if (naveObj.mesh.position.x > 20) {
-                naveObj.ativa = false;
-                naveObj.timer = Math.random() * 2000 + 600; // Define o próximo tempo de espera
+            nave.mesh.position.x += nave.velocidade;
+            nave.mesh.rotation.x += 0.1;
+            if      (nave.mesh.position.x < -10) nave.mesh.material.opacity += 0.02;
+            else if (nave.mesh.position.x >  10) nave.mesh.material.opacity -= 0.02;
+            else                                  nave.mesh.material.opacity = 1;
+            if (nave.mesh.position.x > 20) {
+                nave.ativa = false;
+                nave.timer = Math.random()*1000+200;
             }
         }
     });
 
-    // Manter as estrelas girando
-    if (typeof estrelas !== 'undefined') {
-        estrelas.rotation.y += 0.0001;
-    }
-
+    if (aberto) fitOverlay();
     controls.update();
     renderer.render(scene, camera);
 }
 animate();
+
+// Abre automaticamente após animação (deriva ~2.7s + lerp ~2.5s)
+setTimeout(abrirPortfolio, 5500);
+
+window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+    if (aberto) fitOverlay();
+});

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brayan | Portfolio N64</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; background: #000; font-family: Tahoma, Arial, sans-serif; }
+
+        #canvas-container { position: fixed; inset: 0; z-index: 1; }
+
+        #hint {
+            position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+            z-index: 10; color: #888; font-size: 12px; letter-spacing: 1px;
+            background: rgba(0,0,0,.6); padding: 6px 16px; border: 1px solid #222;
+            pointer-events: none; transition: opacity .6s;
+        }
+        #hint.hide { opacity: 0; }
+
+        /* Overlay cobre tudo mas é transparente — só o xp-win é visível */
+        #xp-overlay {
+            position: fixed; inset: 0; z-index: 20;
+            pointer-events: none;
+            opacity: 0; transition: opacity .35s;
+        }
+        #xp-overlay.vis { opacity: 1; }
+
+        /* xp-win é posicionado pelo JS com left/top/width/height exatos */
+        #xp-win {
+            position: absolute;
+            pointer-events: all;
+            background: #ECE9D8;
+            border: 2px solid #0A246A;
+            border-radius: 5px 5px 3px 3px;
+            box-shadow: 0 4px 24px #000b;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* font-size base — tudo em em para escalar junto */
+            font-size: 11px;
+        }
+
+        /* ── Titlebar ── */
+        .xp-tb {
+            background: linear-gradient(to bottom,#2461EA,#1941C0 30%,#1636A8 70%,#0F2A8A);
+            color: #fff; font-weight: bold; font-size: 1em;
+            padding: .27em .5em .35em .65em;
+            display: flex; align-items: center; gap: .45em; flex-shrink: 0;
+            user-select: none;
+        }
+        .xp-tb-title { flex: 1; text-shadow: 1px 1px 2px #0008; white-space: nowrap; overflow: hidden; font-size: .95em; }
+        .xp-tb-btns  { display: flex; gap: 2px; }
+        .xp-tb-btns button {
+            width: 1.8em; height: 1.7em; border: 1px solid #1a3a9a; border-radius: 3px;
+            font-size: .9em; font-weight: bold; cursor: pointer; color: #fff; padding: 0;
+            background: linear-gradient(to bottom,#4a7ee8,#1a4ac0); line-height: 1;
+        }
+        .xp-tb-btns button:hover { background: linear-gradient(to bottom,#6a9eff,#2a5adf); }
+        .xp-cls { background: linear-gradient(to bottom,#e04040,#a02020) !important; }
+        .xp-cls:hover { background: linear-gradient(to bottom,#ff5555,#cc2222) !important; }
+
+        /* ── Toolbar ── */
+        .xp-toolbar {
+            background: #ECE9D8; border-bottom: 1px solid #ACA899;
+            padding: .2em .4em; display: flex; gap: .25em; flex-shrink: 0;
+        }
+        .xp-toolbar button {
+            font-family: inherit; font-size: .9em;
+            background: linear-gradient(to bottom,#EBE8D7,#D7D4C8);
+            border: 1px solid #ACA899; border-radius: 3px; color: #000;
+            padding: .2em .7em; cursor: pointer; box-shadow: 1px 1px 0 #fff inset;
+        }
+        .xp-toolbar button:hover { background: linear-gradient(to bottom,#EEF4FF,#C8D8F0); border-color: #316AC5; }
+        .xp-toolbar button:active { box-shadow: none; }
+
+        /* ── Menubar ── */
+        .xp-mb {
+            background: #ECE9D8; border-bottom: 1px solid #ACA899;
+            display: flex; padding: .15em .3em 0; flex-shrink: 0; gap: 1px;
+        }
+        .xp-mb button {
+            font-family: inherit; font-size: .9em;
+            background: transparent; border: 1px solid transparent;
+            color: #000; padding: .25em .7em; cursor: pointer; border-radius: 3px 3px 0 0;
+        }
+        .xp-mb button:hover { background: #316AC5; color: #fff; border-color: #316AC5; }
+        .xp-mb button.act {
+            background: #ECE9D8; border: 1px solid #ACA899;
+            border-bottom: 1px solid #ECE9D8; margin-bottom: -1px; z-index: 1; position: relative;
+        }
+
+        /* ── Body ── */
+        .xp-body {
+            flex: 1; overflow-y: auto; padding: .7em .85em;
+            background: #fff; border: 1px solid #ACA899; margin: .28em;
+            scrollbar-width: thin; scrollbar-color: #ACA899 #ECE9D8;
+            font-size: .92em;
+        }
+        .xp-body::-webkit-scrollbar { width: 14px; }
+        .xp-body::-webkit-scrollbar-track { background: #ECE9D8; border-left: 1px solid #ACA899; }
+        .xp-body::-webkit-scrollbar-thumb { background: linear-gradient(to right,#E0DDD5,#C8C5BC); border: 1px solid #ACA899; }
+
+        /* ── Tabs ── */
+        .tab { display: none; } .tab.act { display: block; }
+        .sec { font-weight: bold; color: #316AC5; border-bottom: 1px solid #C8C5BC; padding-bottom: .3em; margin-bottom: .7em; }
+
+        /* ── Profile ── */
+        .profile { display: flex; gap: .7em; align-items: flex-start; margin-bottom: .7em; }
+        .avatar { width: 3.2em; height: 3.2em; flex-shrink: 0; background: linear-gradient(135deg,#316AC5,#1941C0); border-radius: 3px; border: 1px solid #ACA899; display: flex; align-items: center; justify-content: center; font-size: 1.6em; }
+        .pname  { font-size: 1.1em; font-weight: bold; margin-bottom: .1em; }
+        .prole  { font-size: .85em; color: #444; margin-bottom: .4em; }
+        .badges { display: flex; gap: .25em; flex-wrap: wrap; }
+        .badge  { background: #316AC5; color: #fff; font-size: .8em; padding: .1em .45em; border-radius: 2px; }
+
+        /* ── Groups ── */
+        .grp   { border: 1px solid #ACA899; border-radius: 3px; margin-bottom: .6em; overflow: hidden; }
+        .grp-t { background: linear-gradient(to bottom,#EBE8D7,#D7D4C8); font-weight: bold; font-size: .9em; padding: .22em .6em; border-bottom: 1px solid #ACA899; }
+        .grp-b { padding: .4em .7em; background: #fff; }
+        .irow  { font-size: .9em; line-height: 1.9; }
+        .irow .lb { color: #316AC5; font-weight: bold; }
+
+        /* ── Progress bars ── */
+        .br { display: flex; align-items: center; gap: .5em; margin-bottom: .25em; font-size: .82em; }
+        .bl { width: 5em; color: #444; }
+        .bt { flex: 1; height: .85em; background: #ECE9D8; border: 1px solid #ACA899; border-radius: 2px; overflow: hidden; }
+        .bf { height: 100%; background: linear-gradient(to bottom,#6ab0ff,#1060df 50%,#0040c0); }
+        .bv { width: 2.2em; text-align: right; color: #666; font-size: .82em; }
+
+        /* ── Skills ── */
+        .skr { display: flex; align-items: center; gap: .5em; margin-bottom: .5em; font-size: .9em; }
+        .skn { width: 8.5em; }
+        .skt { flex: 1; height: .85em; background: #ECE9D8; border: 1px solid #ACA899; border-radius: 2px; overflow: hidden; }
+        .skf { height: 100%; background: linear-gradient(to bottom,#6ab0ff,#1060df 50%,#0040c0); transform: scaleX(0); transform-origin: left; animation: grow .8s forwards; }
+        @keyframes grow { to { transform: scaleX(1); } }
+        .skp { width: 2.2em; text-align: right; color: #666; font-size: .82em; }
+
+        /* ── Projects ── */
+        .proj { border: 1px solid #ACA899; border-radius: 3px; padding: .5em .7em; margin-bottom: .5em; background: #FAFAF5; transition: background .15s,border-color .15s; }
+        .proj:hover { background: #EEF4FF; border-color: #316AC5; }
+        .ph   { display: flex; align-items: center; gap: .4em; margin-bottom: .25em; }
+        .pi   { font-size: 1.1em; }
+        .pt   { font-weight: bold; font-size: .92em; }
+        .pd   { font-size: .82em; color: #444; line-height: 1.4; margin-bottom: .35em; }
+        .tags { display: flex; gap: .2em; flex-wrap: wrap; }
+        .tag  { font-size: .78em; background: #ECE9D8; border: 1px solid #ACA899; padding: .05em .35em; border-radius: 2px; color: #333; }
+
+        /* ── Contact ── */
+        .cr  { display: flex; align-items: center; gap: .7em; font-size: .9em; padding: .35em .6em; margin-bottom: .2em; border: 1px solid transparent; border-radius: 3px; }
+        .cr:hover { background: #EEF4FF; border-color: #316AC5; }
+        .ci  { font-size: 1.1em; width: 1.6em; text-align: center; }
+        .cv a { color: #316AC5; text-decoration: none; }
+        .cv a:hover { text-decoration: underline; }
+        .cnote { margin-top: .7em; font-size: .82em; color: #555; line-height: 1.7; background: #FFFBE6; border: 1px solid #E0D890; padding: .5em .7em; border-radius: 3px; }
+
+        /* ── Statusbar ── */
+        .xp-sb { background: linear-gradient(to bottom,#ECE9D8,#D7D4C8); border-top: 1px solid #ACA899; padding: .18em .55em; font-size: .82em; display: flex; justify-content: space-between; flex-shrink: 0; }
+        .xp-sp { border: 1px solid #ACA899; padding: .08em .45em; background: #ECE9D8; }
+    </style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+<div id="hint">Iniciando Brayan_OS...</div>
+
+<!-- Overlay transparente — xp-win posicionado pelo JS -->
+<div id="xp-overlay">
+  <div id="xp-win">
+
+    <div class="xp-tb">
+      <span style="font-size:1.2em">🖥️</span>
+      <span class="xp-tb-title">Brayan_OS XP — Portfolio</span>
+      <div class="xp-tb-btns">
+        <button title="Minimizar">─</button>
+        <button title="Maximizar">□</button>
+        <button class="xp-cls" id="btn-fechar" title="Fechar">✕</button>
+      </div>
+    </div>
+
+    <div class="xp-toolbar">
+      <button id="btn-camera">🎥 Câmera Livre</button>
+    </div>
+
+    <div class="xp-mb" id="xp-mb">
+      <button class="act" data-tab="home">🏠 Início</button>
+      <button data-tab="skills">⚡ Skills</button>
+      <button data-tab="projects">📁 Projetos</button>
+      <button data-tab="contact">📧 Contato</button>
+    </div>
+
+    <div class="xp-body">
+
+      <div class="tab act" id="tab-home">
+        <div class="profile">
+          <div class="avatar">👨‍💻</div>
+          <div>
+            <div class="pname">Brayan Rodrigues</div>
+            <div class="prole">Full Stack Developer</div>
+            <div class="badges">
+              <span class="badge">Disponível</span>
+              <span class="badge">Freelance</span>
+              <span class="badge">Full-time</span>
+            </div>
+          </div>
+        </div>
+        <div class="grp">
+          <div class="grp-t">📋 Informações</div>
+          <div class="grp-b">
+            <div class="irow"><span class="lb">Nome:&nbsp;</span>Brayan Rodrigues</div>
+            <div class="irow"><span class="lb">Cargo:&nbsp;</span>Full Stack Developer</div>
+            <div class="irow"><span class="lb">Stack:&nbsp;</span>React / Node.js / Python</div>
+            <div class="irow"><span class="lb">Status:&nbsp;</span>🟢 Disponível</div>
+          </div>
+        </div>
+        <div class="grp">
+          <div class="grp-t">📊 Experiência</div>
+          <div class="grp-b">
+            <div class="br"><span class="bl">Frontend</span><div class="bt"><div class="bf" style="width:88%"></div></div><span class="bv">88%</span></div>
+            <div class="br"><span class="bl">Backend</span><div class="bt"><div class="bf" style="width:80%"></div></div><span class="bv">80%</span></div>
+            <div class="br"><span class="bl">DevOps</span><div class="bt"><div class="bf" style="width:62%"></div></div><span class="bv">62%</span></div>
+            <div class="br"><span class="bl">3D / WebGL</span><div class="bt"><div class="bf" style="width:55%"></div></div><span class="bv">55%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab" id="tab-skills">
+        <div class="sec">⚡ Skill Tree</div>
+        <div id="sk-list"></div>
+      </div>
+
+      <div class="tab" id="tab-projects">
+        <div class="sec">📁 Projetos</div>
+        <div class="proj"><div class="ph"><span class="pi">🛒</span><span class="pt">E-Commerce Fullstack</span></div><div class="pd">Auth JWT, carrinho, Stripe, painel admin.</div><div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">Stripe</span></div></div>
+        <div class="proj"><div class="ph"><span class="pi">💰</span><span class="pt">App de Finanças</span></div><div class="pd">Dashboard em tempo real, controle de gastos e metas.</div><div class="tags"><span class="tag">Next.js</span><span class="tag">Prisma</span><span class="tag">Chart.js</span></div></div>
+        <div class="proj"><div class="ph"><span class="pi">⚙️</span><span class="pt">CLI DevTools</span></div><div class="pd">Scaffolding com templates customizáveis.</div><div class="tags"><span class="tag">Python</span><span class="tag">Click</span></div></div>
+        <div class="proj"><div class="ph"><span class="pi">🎮</span><span class="pt">Portfolio N64</span></div><div class="pd">Portfolio 3D com estética N64, drag & drop e física.</div><div class="tags"><span class="tag">Three.js</span><span class="tag">WebGL</span></div></div>
+      </div>
+
+      <div class="tab" id="tab-contact">
+        <div class="sec">📧 Contato</div>
+        <div class="cr"><span class="ci">📧</span><span class="cv"><a href="/cdn-cgi/l/email-protection#8be9f9eaf2eae5cbeee6eae2e7a5e8e4e6"><span class="__cf_email__" data-cfemail="1b79697a627a755b7e767a727735787476">[email&#160;protected]</span></a></span></div>
+        <div class="cr"><span class="ci">🐙</span><span class="cv"><a href="https://github.com/brayan" target="_blank">github.com/brayan</a></span></div>
+        <div class="cr"><span class="ci">💼</span><span class="cv"><a href="https://linkedin.com/in/brayan" target="_blank">linkedin.com/in/brayan</a></span></div>
+        <div class="cr"><span class="ci">🌐</span><span class="cv"><a href="https://brayan.dev" target="_blank">brayan.dev</a></span></div>
+        <div class="cnote">💡 Aberto para freelance e full-time.<br>📬 Respondo em até 24h.</div>
+      </div>
+
+    </div>
+
+    <div class="xp-sb">
+      <span class="xp-sp" id="xp-clock">00:00:00</span>
+      <span class="xp-sp">RAM: 512 MB</span>
+      <span class="xp-sp">Brayan_OS XP</span>
+    </div>
+
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+<script type="importmap">
+  { "imports": { "three": "https://unpkg.com/three@0.150.1/build/three.module.js" } }
+</script>
+<script type="module" src="main.js"></script>
+
+<script>
+// Abas
+document.getElementById('xp-mb').addEventListener('click', function(e) {
+    var btn = e.target.closest('button[data-tab]');
+    if (!btn) return;
+    document.querySelectorAll('#xp-mb button').forEach(function(b){ b.classList.remove('act'); });
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('act'); });
+    btn.classList.add('act');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('act');
+    if (btn.dataset.tab === 'skills') buildSkills();
+});
+
+// Skills
+var SKILLS = [
+    {n:'JavaScript',p:90},{n:'React / Next.js',p:85},{n:'Node.js',p:80},
+    {n:'TypeScript',p:75},{n:'Python',p:72},{n:'PostgreSQL',p:68},
+    {n:'Docker',p:60},{n:'Three.js',p:55}
+];
+var builtSkills = false;
+function buildSkills() {
+    if (builtSkills) return; builtSkills = true;
+    var c = document.getElementById('sk-list');
+    SKILLS.forEach(function(s, i) {
+        var r = document.createElement('div'); r.className = 'skr';
+        r.innerHTML = '<span class="skn">'+s.n+'</span>'
+            +'<div class="skt"><div class="skf" style="width:'+s.p+'%;animation-delay:'+(i*.08)+'s"></div></div>'
+            +'<span class="skp">'+s.p+'%</span>';
+        c.appendChild(r);
+    });
+}
+
+// Relógio
+function tick() {
+    var d=new Date(), el=document.getElementById('xp-clock');
+    if (el) el.textContent = [d.getHours(),d.getMinutes(),d.getSeconds()]
+        .map(function(v){return String(v).padStart(2,'0');}).join(':');
+}
+tick(); setInterval(tick, 1000);
+
+// Botões — chamam funções expostas pelo main.js
+document.getElementById('btn-fechar').addEventListener('click', function() {
+    if (window.fecharPor
