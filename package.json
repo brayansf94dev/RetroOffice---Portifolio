@@ -1,0 +1,15 @@
+{
+  "name": "portfolio-n64",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.150.1"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
