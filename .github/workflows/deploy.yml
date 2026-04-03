@@ -27,15 +27,20 @@ jobs:
         with:
           node-version: '20'
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
 
-      - run: npm run build
+      - name: Build
+        run: npm run build
+
+      - name: Check dist folder
+        run: ls -la dist/ && ls -la dist/assets/
 
       - uses: actions/configure-pages@v4
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ./dist
 
       - id: deployment
         uses: actions/deploy-pages@v4
