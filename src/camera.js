@@ -1,4 +1,4 @@
-import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
+import * as THREE from 'three';
 
 export function gerenciarCamera(camera, controls) {
     const posicaoFocada = new THREE.Vector3(0, 1.9, 3.3);

@@ -1,5 +1,5 @@
-import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
-import { CSS3DRenderer } from 'https://unpkg.com/three@0.150.1/examples/jsm/renderers/CSS3DRenderer.js';
+import * as THREE from 'three';
+import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 import { criarComputador }               from './computador.js';
 import { configurarControles }           from './controles.js';
 import { criarEstrelas, criarEsquadrao } from './cenario.js';
