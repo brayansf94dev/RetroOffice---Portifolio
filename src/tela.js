@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+import { CSS3DObject } from 'https://unpkg.com/three@0.150.1/examples/jsm/renderers/CSS3DRenderer.js';
 
 export function criarTelaInterativa() {
     const div = document.createElement('div');

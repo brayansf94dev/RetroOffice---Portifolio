@@ -27,6 +27,13 @@ export function gerenciarCamera(camera, controls) {
             controls.enabled = false;
             livreAnimando    = true;
 
+        } else if (estado === 'jogo') {
+            // Modo Jogo: Desativa os controles orbitais completamente
+            // para que a câmera siga a nave no loop principal (animate)
+            controls.enabled = false;
+            livreAnimando    = false;
+            onLivreReady     = null;
+            
         } else {
             // Modo foco: câmera vai via lerp, OrbitControls desligado
             controls.minDistance   = 2;
@@ -64,7 +71,13 @@ export function gerenciarCamera(camera, controls) {
 
                     if (onLivreReady) { onLivreReady(); onLivreReady = null; }
                 }
-            }
+
+                } else if (estado === 'jogo') {
+                // Desliga os controles orbitais para o script do jogo assumir
+                controls.enabled = false;
+                livreAnimando = false;
+                onLivreReady = null;
+                }
             // Quando livreAnimando = false, OrbitControls tem controle total
         }
     }

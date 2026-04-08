@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brayan | Portfolio</title>
+    <title>Brayan Rodrigues | Dev + Produto</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="canvas-container"></div>
-<div id="hint">Iniciando Brayan_OS...</div>
+<div id="hint">Carregando Brayan_OS — Dev + Produto + Visão...</div>
 
 <!-- Overlay transparente — xp-win posicionado pelo JS -->
 <div id="xp-overlay">
@@ -22,7 +22,7 @@
 
     <div class="xp-tb">
       <span style="font-size:1.2em">🖥️</span>
-      <span class="xp-tb-title">Brayan_OS XP — Portfolio</span>
+      <span class="xp-tb-title">Brayan_OS — Dev + Produto + Visão</span>
       <div class="xp-tb-btns">
         <button title="Minimizar">─</button>
         <button title="Maximizar">□</button>
@@ -35,80 +35,247 @@
     </div>
 
     <div class="xp-mb" id="xp-mb">
-      <button class="act" data-tab="home">🏠 Início</button>
-      <button data-tab="skills">⚡ Skills</button>
-      <button data-tab="projects">📁 Projetos</button>
-      <button data-tab="contact">📧 Contato</button>
+      <button class="act" data-tab="home">🧭 Missão</button>
+      <button data-tab="skills">⚙️ Arsenal</button>
+      <button data-tab="projects">🚀 Projetos</button>
+      <button data-tab="services">💼 Serviços</button>
+      <button data-tab="contact">📡 Contato</button>
+      <button data-tab="media">💿 Multímidia</button>
     </div>
 
-    <div class="xp-body">
+    <div class="xp-body" style="position:relative;">
 
+      <!-- ── MISSÃO (home) ─────────────────────────────── -->
       <div class="tab act" id="tab-home">
         <div class="profile">
-          <div class="avatar">👨‍💻</div>
+          <div class="avatar">🧠</div>
           <div>
             <div class="pname">Brayan Rodrigues</div>
-            <div class="prole">Full Stack Developer</div>
+            <div class="prole">Dev · Produto · Sistemas</div>
             <div class="badges">
-              <span class="badge">Disponível</span>
-              <span class="badge">Freelance</span>
-              <span class="badge">Full-time</span>
+              <span class="badge">🟢 Disponível</span>
+              <span class="badge">Freela</span>
+              <span class="badge">Beyond Bits</span>
             </div>
           </div>
         </div>
+
         <div class="grp">
-          <div class="grp-t">📋 Informações</div>
+          <div class="grp-t">🎯 Missão</div>
           <div class="grp-b">
-            <div class="irow"><span class="lb">Nome:&nbsp;</span>Brayan Rodrigues</div>
-            <div class="irow"><span class="lb">Cargo:&nbsp;</span>Full Stack Developer</div>
-            <div class="irow"><span class="lb">Stack:&nbsp;</span>React / Node.js / Python</div>
-            <div class="irow"><span class="lb">Status:&nbsp;</span>🟢 Disponível</div>
+            <div class="irow" style="line-height:1.7;font-size:.88em;color:#333;">
+              Construo sistemas que funcionam de verdade — do levantamento de requisitos à interface final.<br>
+              4 anos entendendo negócios como PO, QA e analista. Agora escrevo o código também.<br>
+              <strong style="color:#316AC5;">Produto + Técnica + IA como ferramenta.</strong> Não só dev. Solução completa.
+            </div>
           </div>
         </div>
+
         <div class="grp">
-          <div class="grp-t">📊 Experiência</div>
+          <div class="grp-t">📡 Sistema Ativo</div>
           <div class="grp-b">
-            <div class="br"><span class="bl">Frontend</span><div class="bt"><div class="bf" style="width:88%"></div></div><span class="bv">88%</span></div>
-            <div class="br"><span class="bl">Backend</span><div class="bt"><div class="bf" style="width:80%"></div></div><span class="bv">80%</span></div>
-            <div class="br"><span class="bl">DevOps</span><div class="bt"><div class="bf" style="width:62%"></div></div><span class="bv">62%</span></div>
+            <div class="irow"><span class="lb">Operador:</span>Brayan Rodrigues</div>
+            <div class="irow"><span class="lb">Função:</span>Dev + Produto + Integrações</div>
+            <div class="irow"><span class="lb">Empresa:</span>Beyond Bits — Sistemas & Sites</div>
+            <div class="irow"><span class="lb">Foco:</span>Fluig · JS · Integrações · UX</div>
+            <div class="irow"><span class="lb">Status:</span>🟢 Aceitando missões</div>
+          </div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-t">📊 Trajetória</div>
+          <div class="grp-b">
+            <div class="br"><span class="bl">Produto/PO</span><div class="bt"><div class="bf" style="width:90%"></div></div><span class="bv">90%</span></div>
+            <div class="br"><span class="bl">Análise/QA</span><div class="bt"><div class="bf" style="width:85%"></div></div><span class="bv">85%</span></div>
+            <div class="br"><span class="bl">Frontend</span><div class="bt"><div class="bf" style="width:72%"></div></div><span class="bv">72%</span></div>
+            <div class="br"><span class="bl">Integrações</span><div class="bt"><div class="bf" style="width:68%"></div></div><span class="bv">68%</span></div>
             <div class="br"><span class="bl">3D / WebGL</span><div class="bt"><div class="bf" style="width:55%"></div></div><span class="bv">55%</span></div>
           </div>
         </div>
       </div>
 
+      <!-- ── ARSENAL (skills) ──────────────────────────── -->
       <div class="tab" id="tab-skills">
-        <div class="sec">⚡ Skill Tree</div>
-        <div id="sk-list"></div>
+        <div class="sec">⚙️ Arsenal Técnico</div>
+
+        <div class="grp">
+          <div class="grp-t">🔧 Tecnologias</div>
+          <div class="grp-b">
+            <div class="skr"><span class="skn">JavaScript</span><div class="skt"><div class="skf" style="width:78%;animation-delay:.0s"></div></div><span class="skp">78%</span></div>
+            <div class="skr"><span class="skn">Fluig</span><div class="skt"><div class="skf" style="width:82%;animation-delay:.09s"></div></div><span class="skp">82%</span></div>
+            <div class="skr"><span class="skn">HTML/CSS</span><div class="skt"><div class="skf" style="width:80%;animation-delay:.18s"></div></div><span class="skp">80%</span></div>
+            <div class="skr"><span class="skn">Three.js</span><div class="skt"><div class="skf" style="width:55%;animation-delay:.27s"></div></div><span class="skp">55%</span></div>
+            <div class="skr"><span class="skn">Integrações</span><div class="skt"><div class="skf" style="width:70%;animation-delay:.36s"></div></div><span class="skp">70%</span></div>
+            <div class="skr"><span class="skn">IA aplicada</span><div class="skt"><div class="skf" style="width:85%;animation-delay:.45s"></div></div><span class="skp">85%</span></div>
+          </div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-t">🧩 O que eu realmente resolvo</div>
+          <div class="grp-b">
+            <div class="irow">✦ <strong>Transformo requisitos em sistemas</strong> — não precisa explicar duas vezes</div>
+            <div class="irow">✦ <strong>Construo com visão de produto</strong> — penso no usuário antes do código</div>
+            <div class="irow">✦ <strong>Integro sistemas legados</strong> — especialmente no ecossistema Fluig/corporativo</div>
+            <div class="irow">✦ <strong>Entrego UX que funciona</strong> — sem precisar de um designer separado</div>
+            <div class="irow">✦ <strong>Uso IA com critério</strong> — aceleração real, não geração de lixo</div>
+            <div class="irow">✦ <strong>Comunico com o cliente</strong> — 4 anos de produto ensinaram isso</div>
+          </div>
+        </div>
       </div>
 
+      <!-- ── PROJETOS ───────────────────────────────────── -->
       <div class="tab" id="tab-projects">
-        <div class="sec">📁 Projetos</div>
-        <div class="proj"><div class="ph"><span class="pi">🛒</span><span class="pt">E-Commerce Fullstack</span></div><div class="pd">Auth JWT, carrinho, Stripe, painel admin.</div><div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">Stripe</span></div></div>
-        <div class="proj"><div class="ph"><span class="pi">💰</span><span class="pt">App de Finanças</span></div><div class="pd">Dashboard em tempo real, controle de gastos e metas.</div><div class="tags"><span class="tag">Next.js</span><span class="tag">Prisma</span><span class="tag">Chart.js</span></div></div>
-        <div class="proj"><div class="ph"><span class="pi">⚙️</span><span class="pt">CLI DevTools</span></div><div class="pd">Scaffolding com templates customizáveis.</div><div class="tags"><span class="tag">Python</span><span class="tag">Click</span></div></div>
-        <div class="proj"><div class="ph"><span class="pi">🎮</span><span class="pt">Portfolio N64</span></div><div class="pd">Portfolio 3D com estética N64, drag & drop e física.</div><div class="tags"><span class="tag">Three.js</span><span class="tag">WebGL</span></div></div>
+        <div class="sec">🚀 Projetos em Órbita</div>
+
+        <div class="proj">
+          <div class="ph"><span class="pi">🌌</span><span class="pt">Portfólio 3D — Brayan_OS</span></div>
+          <div class="pd">Muito mais que uma lista de links: um experimento interativo em WebGL. Emulei um sistema operacional nostálgico rodando nativamente no navegador com Three.js, incluindo um mini-game de nave com áudio procedural.</div>
+          <div class="tags">
+            <span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">Engenharia Front-end</span><span class="tag">Game Dev</span>
+          </div>
+          <div class="tags" style="margin-top:.4em;gap:.4em">
+            <a href="https://github.com/brayansf94dev/RetroOffice---Portifolio" target="_blank" class="tag" style="background:#222;color:#fff;border-color:#444;cursor:pointer;text-decoration:none;">⌥ Ver Código</a>
+            <button class="tag proj-about-btn" data-project="brayanos" style="background:#444;color:#fff;border-color:#555;cursor:pointer;border:1px solid #555;border-radius:2px;font-family:inherit;font-size:.78em;padding:.05em .35em;">ℹ️ Ver Sobre</button>
+          </div>
+        </div>
+
+        <div class="proj">
+          <div class="ph"><span class="pi">🔷</span><span class="pt">Beyond Bits — Site Institucional</span></div>
+          <div class="pd">A vitrine da minha agência de tecnologia. Construído para alta conversão corporativa, unindo uma UI imersiva (esfera de partículas em Three.js) com otimização extrema de performance e Dark Mode nativo.</div>
+          <div class="tags">
+            <span class="tag">Produto</span><span class="tag">Conversão</span><span class="tag">Three.js</span><span class="tag">Performance</span>
+          </div>
+          <div class="tags" style="margin-top:.4em;gap:.4em">
+            <button class="tag proj-open-btn" data-url="https://beyond.dev.br" data-title="Beyond Bits" style="background:#316AC5;color:#fff;border-color:#316AC5;cursor:pointer;border:1px solid #316AC5;border-radius:2px;font-family:inherit;font-size:.78em;padding:.05em .35em;">▶ Explorar</button>
+            
+            <a href="https://github.com/beyondBitsLtda/Site_Beyond" target="_blank" class="tag" style="background:#222;color:#fff;border-color:#444;cursor:pointer;text-decoration:none;">⌥ Ver Código</a>
+            
+            <button class="tag proj-about-btn" data-project="beyondbits" style="background:#444;color:#fff;border-color:#555;cursor:pointer;border:1px solid #555;border-radius:2px;font-family:inherit;font-size:.78em;padding:.05em .35em;">ℹ️ Ver Sobre</button>
+          </div>
+        </div>
+
+        <div class="proj">
+          <div class="ph"><span class="pi">🤖</span><span class="pt">Beyond Brain — IA para Times</span></div>
+          <div class="pd">Inteligência Operacional em formato de terminal. Uma plataforma desenhada para centralizar documentação e automatizar processos, potencializando o fator humano e reduzindo a carga cognitiva da equipe.</div>
+          <div class="tags">
+            <span class="tag">IA</span><span class="tag">Produto</span><span class="tag">Automação</span><span class="tag">SaaS</span>
+          </div>
+          <div class="tags" style="margin-top:.4em;gap:.4em">
+            <button class="tag proj-open-btn" data-url="https://beyondbitsltda.github.io/beyond_brain/" data-title="Beyond Brain Terminal" style="background:#316AC5;color:#fff;border-color:#316AC5;cursor:pointer;border:1px solid #316AC5;border-radius:2px;font-family:inherit;font-size:.78em;padding:.05em .35em;">▶ Explorar</button>
+            <a href="https://github.com/beyondBitsLtda/beyond_brain" target="_blank" class="tag" style="background:#222;color:#fff;border-color:#444;cursor:pointer;text-decoration:none;">⌥ Ver Código</a>
+            <button class="tag proj-about-btn" data-project="beyondbrain" style="background:#444;color:#fff;border-color:#555;cursor:pointer;border:1px solid #555;border-radius:2px;font-family:inherit;font-size:.78em;padding:.05em .35em;">ℹ️ Ver Sobre</button>
+          </div> 
+        </div>
       </div>
 
+      <!-- ── SERVIÇOS ───────────────────────────────────── -->
+      <div class="tab" id="tab-services">
+        <div class="sec">💼 Missões Disponíveis</div>
+
+        <div class="grp">
+          <div class="grp-t">🌐 Sites que vendem</div>
+          <div class="grp-b">
+            <div class="irow" style="font-size:.85em;color:#333;line-height:1.7;">
+              Seu negócio merece uma presença digital que converte — não só que "existe".<br>
+              <strong>O que entrego:</strong> site rápido, copy pensado, UX que guia o visitante até o contato.
+            </div>
+          </div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-t">⚙️ Sistemas sob medida</div>
+          <div class="grp-b">
+            <div class="irow" style="font-size:.85em;color:#333;line-height:1.7;">
+              Processos manuais custam caro. Construo sistemas que automatizam o que pode ser automatizado.<br>
+              <strong>O que entrego:</strong> formulários inteligentes, dashboards, integrações entre ferramentas.
+            </div>
+          </div>
+        </div>
+
+        <div class="grp">
+          <div class="grp-t">🔗 Integrações &amp; Fluig</div>
+          <div class="grp-b">
+            <div class="irow" style="font-size:.85em;color:#333;line-height:1.7;">
+              Especialista em conectar sistemas corporativos — especialmente Fluig e ecossistemas TOTVS.<br>
+              <strong>O que entrego:</strong> processos integrados, formulários customizados, fluxos automatizados.
+            </div>
+          </div>
+        </div>
+
+        <div class="cnote">
+          🎯 <strong>Diferencial:</strong> você não precisa me explicar como funciona seu negócio. Eu já entendo — e entrego o que resolve, não o que impressiona no Figma.<br>
+          📬 Fale comigo antes de contratar qualquer dev.
+        </div>
+      </div>
+
+      <!-- ── CONTATO ────────────────────────────────────── -->
       <div class="tab" id="tab-contact">
-        <div class="sec">📧 Contato</div>
-        <div class="cr"><span class="ci">📧</span><span class="cv"><a href="/cdn-cgi/l/email-protection#aac8d8cbd3cbc4eacfc7cbc3c684c9c5c7"><span class="__cf_email__" data-cfemail="86e4f4e7ffe7e8c6e3ebe7efeaa8e5e9eb">[email&#160;protected]</span></a></span></div>
-        <div class="cr"><span class="ci">🐙</span><span class="cv"><a href="https://github.com/brayan" target="_blank">github.com/brayan</a></span></div>
-        <div class="cr"><span class="ci">💼</span><span class="cv"><a href="https://linkedin.com/in/brayan" target="_blank">linkedin.com/in/brayan</a></span></div>
-        <div class="cr"><span class="ci">🌐</span><span class="cv"><a href="https://brayan.dev" target="_blank">brayan.dev</a></span></div>
-        <div class="cnote">💡 Aberto para freelance e full-time.<br>📬 Respondo em até 24h.</div>
+        <div class="sec">📡 Abrir Canal</div>
+
+        <div class="cr"><span class="ci">💼</span><span class="cv"><a href="https://www.linkedin.com/in/brayan-henrique-de-rodrigues" target="_blank">linkedin.com/in/brayan-henrique-de-rodrigues</a></span></div>
+        <div class="cr"><span class="ci">🐙</span><span class="cv"><a href="https://github.com/brayansf94dev" target="_blank">github.com/brayansf94dev</a></span></div>
+        <div class="cr"><span class="ci">📸</span><span class="cv"><a href="https://www.instagram.com/brayan__dev" target="_blank">@brayan__dev</a></span></div>
+        <div class="cr"><span class="ci">🌐</span><span class="cv"><a href="https://beyond.dev.br" target="_blank">beyond.dev.br</a></span></div>
+
+        <div class="cnote">
+          🟢 <strong>Status: Aceitando novos projetos.</strong><br>
+          Se você tem um problema real para resolver — site, sistema, integração — me manda mensagem.<br>
+          📬 Respondo em até 24h. Sem enrolação.
+        </div>
       </div>
 
-    </div>
-
-    <div class="xp-sb">
+      <!-- ── EXTRA (media) ─────────────────────────────── -->
+      <div class="tab" id="tab-media">
+        <div class="sec">💿 Modo Livre</div>
+        <div class="media-grid">
+            <div class="media-item active" id="btn-fotos">
+                <span class="mi-icon">📷</span>
+                <span class="mi-title">Fotos</span>
+                <span class="mi-status" style="color:#316AC5;font-weight:bold;">Ver Galeria</span>
+            </div>
+            <div class="media-item active" id="btn-musica">
+                <span class="mi-icon">🎵</span>
+                <span class="mi-title">Música</span>
+                <span class="mi-status" style="color:#316AC5;font-weight:bold;">Abrir Player</span>
+            </div>
+            <div class="media-item active" id="btn-fox64">
+                <span class="mi-icon">🚀</span>
+                <span class="mi-title">Fox 64</span>
+                <span class="mi-status" style="color: #00aa00; font-weight: bold;">Jogar Agora</span>
+            </div>
+            <div class="media-item active" id="btn-bzero64">
+                <span class="mi-icon">🏎️</span>
+                <span class="mi-title">B-Zero 64</span>
+                <span class="mi-status" style="color:#ff8800;font-weight:bold;">Correr Agora</span>
+            </div>
+        </div>
+      </div>
+      <div id="about-viewer" style="display: none; position: absolute; inset: 0; background: #ECE9D8; z-index: 50; flex-direction: column;">
+        <div class="xp-tb" style="background: linear-gradient(to bottom,#2461EA,#1941C0 30%,#1636A8 70%,#0F2A8A); padding: .3em .6em; display: flex; align-items: center; color: white;">
+          <span class="xp-tb-title" id="about-title" style="flex: 1; font-weight: bold; font-size: 11px;">Sobre o Projeto</span>
+          <div class="xp-tb-btns">
+            <button class="xp-cls" id="about-close" title="Fechar" style="background: #e04040; border: 1px solid #a02020; color: white; cursor: pointer; border-radius: 2px;">✕</button>
+          </div>
+        </div>
+        <div id="about-content" style="padding: 15px; overflow-y: auto; flex: 1; color: #333; font-size: 1.1em; line-height: 1.6; font-family: Tahoma, Arial, sans-serif;">
+        </div>
+      </div>
+      </div> <div class="xp-sb">
       <span class="xp-sp" id="xp-clock">00:00:00</span>
       <span class="xp-sp">RAM: 512 MB</span>
       <span class="xp-sp">Brayan_OS XP</span>
     </div>
-
+    </div>
   </div>
 </div>
 
-<script type="module" src="src/main.js"></script>
+
+<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+<script type="importmap">
+  { "imports": { "three": "https://unpkg.com/three@0.150.1/build/three.module.js" } }
+</script>
+<script type="module" src="musica.js"></script>
+<script type="module" src="main.js"></script>
+
 </body>
 </html>
