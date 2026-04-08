@@ -1,8 +1,9 @@
-name: Deploy GitHub Pages
+name: Deploy BRAYAN_OS → GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -22,25 +23,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-      - name: Check dist folder
-        run: ls -la dist/ && ls -la dist/assets/
-
-      - uses: actions/configure-pages@v4
-
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
-
+          path: .
       - id: deployment
         uses: actions/deploy-pages@v4
