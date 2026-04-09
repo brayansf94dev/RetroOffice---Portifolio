@@ -822,7 +822,6 @@ let _miraEl=null;
 const _vidaIA = {};  // { idx: vida 0-100 }
 
 function atirarMouse() {
-    if (!_correndo || !_ativo) return;
     if (_tiroCD>0) return;
     _tiroCD=10;
     bzAudio.init();
@@ -1127,16 +1126,7 @@ function ligarControles() {
         if(k==='d'||k==='arrowright') _k.d=false;
         if(k===' ') _k.boost=false;
     };
-    _mc=e=>{
-        if(e.button===0){
-            // Não interceptar cliques em botões/links da UI do jogo ou do portfólio
-            const alvo = e.target;
-            if(alvo && (alvo.tagName==='BUTTON'||alvo.tagName==='A'||alvo.closest('button')||alvo.closest('a'))) return;
-            e.preventDefault();
-            e.stopPropagation();
-            atirarMouse();
-        }
-    };
+    _mc=e=>{ if(e.button===0){e.preventDefault();e.stopPropagation();atirarMouse();} };
     _mm=e=>moverMira(e);
     window.addEventListener('keydown',  _kd,{capture:true});
     window.addEventListener('keyup',    _ku,{capture:true});
@@ -1157,13 +1147,13 @@ function desligarControles() {
 function pararBZero() {
     _ativo=false; _correndo=false; _lap3Ativo=false;
     bzAudio.pararMotor();
+    bzAudio.pararAmb();
     desligarControles(); limpar();
     ['bz-selecao','bz-instrucoes','bz-countdown','bz-resultado','bz-hud','bz-dialogo','bzero-style'].forEach(id=>{
         const el=document.getElementById(id); if(el) el.remove();
     });
-    // Remove quaisquer elementos do jogo residuais
+    // Remove flash elements
     document.querySelectorAll('.bz-flash').forEach(el=>el.remove());
-    document.querySelectorAll('[id^="bz-"]').forEach(el=>el.remove());
     document.body.style.cursor='default';
     document.body.style.overflow='';
     if(_controls) _controls.enabled = true;
