@@ -647,6 +647,10 @@ const bzAudio = (() => {
     let _motorFilt   = null;
     let _motorAtivo  = false;
 
+    // Osciladores de ambiente (drone, harm, shimmer, LFO) — precisam ser parados ao sair
+    let _ambOscs     = [];
+    let _ambAtivo    = false;
+
     // Cooldowns para evitar spam
     let _cdTiro    = 0;
     let _cdDano    = 0;
@@ -724,7 +728,8 @@ const bzAudio = (() => {
     // Fundo suave: drone profundo + shimmer de estrelas + ruído côsmico filtrado
     // Tudo muito baixo na mix — só "preenche" o espaço
     function _iniciarAmb() {
-        if (!_pronto) return;
+        if (!_pronto || _ambAtivo) return;
+        _ambAtivo = true;
 
         // Drone sub-grave (55 Hz) — pulsa muito lentamente
         const drone = _ac.createOscillator();
@@ -735,13 +740,15 @@ const bzAudio = (() => {
         droneG.gain.value = 0.14;
         drone.connect(droneFilt); droneFilt.connect(droneG); droneG.connect(_amb);
         drone.start();
+        _ambOscs.push(drone);
 
         // LFO suave no drone (0.08 Hz — ciclo de ~12s)
         const lfoD = _ac.createOscillator();
         const lfoGD = _ac.createGain();
-        lfoD.frequency.value = 0.08; lfoGD.gain.value = 4; // gain baixo: variação mínima de frequência
+        lfoD.frequency.value = 0.08; lfoGD.gain.value = 4;
         lfoD.connect(lfoGD); lfoGD.connect(drone.frequency);
         lfoD.start();
+        _ambOscs.push(lfoD);
 
         // Segunda harmônica suave (110 Hz)
         const harm2 = _ac.createOscillator();
@@ -750,19 +757,20 @@ const bzAudio = (() => {
         harm2G.gain.value = 0.04;
         harm2.connect(harm2G); harm2G.connect(_amb);
         harm2.start();
+        _ambOscs.push(harm2);
 
-        // Shimmer etéreo — sine suave em frequência média-alta, sem LFO (LFO causava sirene)
+        // Shimmer etéreo — sine suave em frequência média-alta
         const shimmer = _ac.createOscillator();
         const shimmG  = _ac.createGain();
-        shimmer.type = 'sine'; shimmer.frequency.value = 880; // frequência mais baixa, menos irritante
-        shimmG.gain.value = 0.008; // muito sutil
+        shimmer.type = 'sine'; shimmer.frequency.value = 880;
+        shimmG.gain.value = 0.008;
         shimmer.connect(shimmG); shimmG.connect(_amb);
         shimmer.start();
+        _ambOscs.push(shimmer);
 
         // Ruído côsmico — filtrado passa-baixo suavíssimo
-        // (re-gera a cada 8 segundos para não acumular memória)
         function _gerarRuidoCosm() {
-            if (!_pronto || !_ac) return;
+            if (!_pronto || !_ac || !_ambAtivo) return;
             const dur = 8.5;
             const len = Math.ceil(_ac.sampleRate * dur);
             const buf = _ac.createBuffer(1, len, _ac.sampleRate);
@@ -772,7 +780,6 @@ const bzAudio = (() => {
             const flt = _ac.createBiquadFilter(); flt.type = 'lowpass'; flt.frequency.value = 180;
             const g   = _ac.createGain(); g.gain.value = 0.028;
             src.connect(flt); flt.connect(g); g.connect(_amb);
-            // Envelope suave para evitar clique na transição
             const t = _ac.currentTime;
             g.gain.setValueAtTime(0, t);
             g.gain.linearRampToValueAtTime(0.028, t + 0.6);
@@ -1063,6 +1070,23 @@ const bzAudio = (() => {
         G.gain.linearRampToValueAtTime(0, t+durTotal);
     }
 
+    // ── Parar ambiente (fade out e stop dos osciladores contínuos) ───────────
+    function pararAmb() {
+        _ambAtivo = false;
+        // Fade out do gain de ambiente
+        if (_amb && _ac) {
+            const t = _ac.currentTime;
+            _amb.gain.cancelScheduledValues(t);
+            _amb.gain.setValueAtTime(_amb.gain.value, t);
+            _amb.gain.linearRampToValueAtTime(0, t + 0.8);
+        }
+        // Para todos os osciladores de ambiente após o fade
+        setTimeout(() => {
+            _ambOscs.forEach(o => { try { o.stop(); } catch(e) {} });
+            _ambOscs = [];
+        }, 900);
+    }
+
     // ── Parar motor (fade out suave) ──────────────────────────────────────────
     function pararMotor() {
         if (!_pronto || !_motorGain) return;
@@ -1080,9 +1104,10 @@ const bzAudio = (() => {
     }
 
     // ── Resetar motor (para jogar de novo) ───────────────────────────────────
-    // Para o motor atual e permite que _iniciarMotor() seja chamado novamente
+    // Para o motor e ambiente atual e permite reiniciar tudo
     function resetar() {
         pararMotor();
+        pararAmb();
         // Zera os cooldowns para evitar silêncio no início da nova partida
         _cdTiro = 0; _cdDano = 0; _cdVolta = 0; _cdMeteoro = 0; _cdBoost = 0;
     }
@@ -1104,7 +1129,7 @@ const bzAudio = (() => {
     }
 
     // ── API pública ───────────────────────────────────────────────────────────
-    return { init, motor, pararMotor, resetar, tiro, tiroIA, explosao, dano, volta, meteoro, boost, ui, vitoria, derrota, setPausa, setVolume };
+    return { init, motor, pararMotor, pararAmb, resetar, tiro, tiroIA, explosao, dano, volta, meteoro, boost, ui, vitoria, derrota, setPausa, setVolume };
 })();
 
 export { bzAudio };
