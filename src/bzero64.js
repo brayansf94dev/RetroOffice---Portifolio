@@ -1146,8 +1146,7 @@ function desligarControles() {
 
 function pararBZero() {
     _ativo=false; _correndo=false; _lap3Ativo=false;
-    bzAudio.pararMotor();
-    bzAudio.pararAmb();
+    bzAudio.destruir(); // fecha o AudioContext completamente — silêncio total garantido
     desligarControles(); limpar();
     ['bz-selecao','bz-instrucoes','bz-countdown','bz-resultado','bz-hud','bz-dialogo','bzero-style'].forEach(id=>{
         const el=document.getElementById(id); if(el) el.remove();
