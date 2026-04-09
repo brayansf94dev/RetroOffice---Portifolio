@@ -133,7 +133,7 @@ const xpWin     = document.getElementById('xp-win');
 const _v        = new THREE.Vector3();
 
 // Posição de foco esperada da câmera (deve bater com camera.js → posicaoFocada)
-const _posicaoFocadaRef = new THREE.Vector3(0, 1.9, 3.3);
+const _posicaoFocadaRef = new THREE.Vector3(0, 1.85, 2.1);
 
 function fitOverlay() {
     if (!telaMesh) return;
@@ -141,7 +141,7 @@ function fitOverlay() {
     // Não renderiza o overlay enquanto a câmera ainda está longe da posição de foco.
     // Isso evita que a wireframe fique com tamanho errado ao voltar do modo jogo,
     // pois a câmera pode estar em plena transição de lerp nesse momento.
-    if (camera.position.distanceTo(_posicaoFocadaRef) > 1.5) return;
+    if (camera.position.distanceTo(_posicaoFocadaRef) > 0.9) return;
 
     telaMesh.updateMatrixWorld(true);
     const hw = 0.8, hh = 0.65;
@@ -157,7 +157,7 @@ function fitOverlay() {
     });
     xpWin.style.left=x0+'px'; xpWin.style.top=y0+'px';
     xpWin.style.width=(x1-x0)+'px'; xpWin.style.height=(y1-y0)+'px';
-    xpWin.style.fontSize='11px';
+    xpWin.style.fontSize='13px';
 }
 
 // ── HINT ──────────────────────────────────────────────────────────────────────
