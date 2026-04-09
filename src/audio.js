@@ -1073,18 +1073,40 @@ const bzAudio = (() => {
     // ── Parar ambiente (fade out e stop dos osciladores contínuos) ───────────
     function pararAmb() {
         _ambAtivo = false;
-        // Fade out do gain de ambiente
         if (_amb && _ac) {
             const t = _ac.currentTime;
             _amb.gain.cancelScheduledValues(t);
             _amb.gain.setValueAtTime(_amb.gain.value, t);
             _amb.gain.linearRampToValueAtTime(0, t + 0.8);
         }
-        // Para todos os osciladores de ambiente após o fade
         setTimeout(() => {
             _ambOscs.forEach(o => { try { o.stop(); } catch(e) {} });
             _ambOscs = [];
         }, 900);
+    }
+
+    // ── Destruir AudioContext completamente (garante silêncio total ao sair) ─
+    function destruir() {
+        _ambAtivo  = false;
+        _motorAtivo = false;
+        _pronto    = false;
+
+        // Para todos os osciladores de ambiente imediatamente
+        _ambOscs.forEach(o => { try { o.stop(); } catch(e) {} });
+        _ambOscs = [];
+
+        // Para osciladores do motor
+        try { _motorOsc1 && _motorOsc1.stop(); } catch(e){}
+        try { _motorOsc2 && _motorOsc2.stop(); } catch(e){}
+        try { _motorSub  && _motorSub.stop();  } catch(e){}
+        _motorOsc1 = null; _motorOsc2 = null; _motorSub = null;
+        _motorGain = null; _motorFilt = null;
+
+        // Fecha o AudioContext — isso silencia absolutamente tudo
+        if (_ac) {
+            _ac.close().catch(()=>{});
+            _ac = null; _master = null; _sfx = null; _amb = null;
+        }
     }
 
     // ── Parar motor (fade out suave) ──────────────────────────────────────────
@@ -1103,13 +1125,21 @@ const bzAudio = (() => {
         }, 2000);
     }
 
-    // ── Resetar motor (para jogar de novo) ───────────────────────────────────
-    // Para o motor e ambiente atual e permite reiniciar tudo
+    // ── Resetar (para jogar de novo — mantém o AudioContext, reinicia amb+motor)
     function resetar() {
         pararMotor();
-        pararAmb();
-        // Zera os cooldowns para evitar silêncio no início da nova partida
+        // Para ambiente imediatamente (sem fade) para reiniciar limpo
+        _ambAtivo = false;
+        _ambOscs.forEach(o => { try { o.stop(); } catch(e) {} });
+        _ambOscs = [];
+        if (_amb && _ac) {
+            _amb.gain.cancelScheduledValues(_ac.currentTime);
+            _amb.gain.setValueAtTime(0, _ac.currentTime);
+        }
+        // Zera cooldowns
         _cdTiro = 0; _cdDano = 0; _cdVolta = 0; _cdMeteoro = 0; _cdBoost = 0;
+        // Reinicia o ambiente para a nova partida
+        setTimeout(() => { if (_pronto) _iniciarAmb(); }, 100);
     }
 
     // ── Controles gerais ──────────────────────────────────────────────────────
@@ -1129,7 +1159,7 @@ const bzAudio = (() => {
     }
 
     // ── API pública ───────────────────────────────────────────────────────────
-    return { init, motor, pararMotor, pararAmb, resetar, tiro, tiroIA, explosao, dano, volta, meteoro, boost, ui, vitoria, derrota, setPausa, setVolume };
+    return { init, motor, pararMotor, pararAmb, destruir, resetar, tiro, tiroIA, explosao, dano, volta, meteoro, boost, ui, vitoria, derrota, setPausa, setVolume };
 })();
 
 export { bzAudio };
