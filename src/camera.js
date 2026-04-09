@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 export function gerenciarCamera(camera, controls) {
-    const posicaoFocada = new THREE.Vector3(0, 1.9, 3.3);
-    const alvoFocado    = new THREE.Vector3(0, 1.75, 0);
+    const posicaoFocada = new THREE.Vector3(0, 1.85, 2.1);
+    const alvoFocado    = new THREE.Vector3(0, 1.72, 0);
     const posicaoLivre  = new THREE.Vector3(0, 2.5, 7);
     const alvoLivre     = new THREE.Vector3(0, 1, 0);
 
