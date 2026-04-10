@@ -139,7 +139,7 @@ function fitOverlay() {
     if (camera.position.distanceTo(_posicaoFocadaRef) > 0.9) return;
 
     // Usa diretamente a posição e tamanho da tela CSS3D
-    const hw = 0.795, hh = 0.645; // metade da PlaneGeometry (1.6 x 1.3) com pequena margem
+  const hw = 0.98, hh = 0.80; // metade da PlaneGeometry (1.6 x 1.3) com pequena margem
 
     const corners = [
         new THREE.Vector3(-hw, -hh, 0),
@@ -150,7 +150,7 @@ function fitOverlay() {
 
     // Monta uma matrix igual à do CSS3DObject (posição + rotação)
     const mat = new THREE.Matrix4();
-    const pos = new THREE.Vector3(0, 1.83, 0.52);
+    const pos = new THREE.Vector3(0, 1.80, 0.52); // era 1.83, desce um pouco
     const rot = new THREE.Euler(-0.05, 0, 0);
     const quat = new THREE.Quaternion().setFromEuler(rot);
     const scale = new THREE.Vector3(1, 1, 1);
