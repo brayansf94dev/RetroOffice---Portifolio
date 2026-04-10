@@ -25,7 +25,7 @@ import { iniciarBZero64, atualizarBZero64, isBZeroAtivo } from './bzero64.js';
 
 // ── CENA WebGL ────────────────────────────────────────────────────────────────
 const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 1000); // original
 export let modoDialogo = false;
 export let naveFalando = null;
 
