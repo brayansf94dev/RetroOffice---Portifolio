@@ -133,31 +133,42 @@ const xpWin     = document.getElementById('xp-win');
 const _v        = new THREE.Vector3();
 
 // Posição de foco esperada da câmera (deve bater com camera.js → posicaoFocada)
-const _posicaoFocadaRef = new THREE.Vector3(0, 1.85, 4.5);
+const _posicaoFocadaRef = new THREE.Vector3(0, 1.9, 3.3);
 
 function fitOverlay() {
-    if (!telaMesh) return;
-
-    // Não renderiza o overlay enquanto a câmera ainda está longe da posição de foco.
-    // Isso evita que a wireframe fique com tamanho errado ao voltar do modo jogo,
-    // pois a câmera pode estar em plena transição de lerp nesse momento.
     if (camera.position.distanceTo(_posicaoFocadaRef) > 0.9) return;
 
-    telaMesh.updateMatrixWorld(true);
-    const hw = 0.8, hh = 0.65;
+    // Usa diretamente a posição e tamanho da tela CSS3D
+    const hw = 0.795, hh = 0.645; // metade da PlaneGeometry (1.6 x 1.3) com pequena margem
+
     const corners = [
-        new THREE.Vector3(-hw,-hh,0), new THREE.Vector3( hw,-hh,0),
-        new THREE.Vector3(-hw, hh,0), new THREE.Vector3( hw, hh,0),
+        new THREE.Vector3(-hw, -hh, 0),
+        new THREE.Vector3( hw, -hh, 0),
+        new THREE.Vector3(-hw,  hh, 0),
+        new THREE.Vector3( hw,  hh, 0),
     ];
+
+    // Monta uma matrix igual à do CSS3DObject (posição + rotação)
+    const mat = new THREE.Matrix4();
+    const pos = new THREE.Vector3(0, 1.83, 0.52);
+    const rot = new THREE.Euler(-0.05, 0, 0);
+    const quat = new THREE.Quaternion().setFromEuler(rot);
+    const scale = new THREE.Vector3(1, 1, 1);
+    mat.compose(pos, quat, scale);
+
     let x0=Infinity, x1=-Infinity, y0=Infinity, y1=-Infinity;
     corners.forEach(c => {
-        _v.copy(c).applyMatrix4(telaMesh.matrixWorld).project(camera);
-        const px=(_v.x*.5+.5)*innerWidth, py=(-_v.y*.5+.5)*innerHeight;
-        if(px<x0)x0=px; if(px>x1)x1=px; if(py<y0)y0=py; if(py>y1)y1=py;
+        _v.copy(c).applyMatrix4(mat).project(camera);
+        const px = (_v.x * .5 + .5) * innerWidth;
+        const py = (-_v.y * .5 + .5) * innerHeight;
+        if(px<x0) x0=px; if(px>x1) x1=px;
+        if(py<y0) y0=py; if(py>y1) y1=py;
     });
-    xpWin.style.left=x0+'px'; xpWin.style.top=y0+'px';
-    xpWin.style.width=(x1-x0)+'px'; xpWin.style.height=(y1-y0)+'px';
-    xpWin.style.fontSize='13px';
+
+    xpWin.style.left   = x0 + 'px';
+    xpWin.style.top    = y0 + 'px';
+    xpWin.style.width  = (x1-x0) + 'px';
+    xpWin.style.height = (y1-y0) + 'px';
 }
 
 // ── HINT ──────────────────────────────────────────────────────────────────────
