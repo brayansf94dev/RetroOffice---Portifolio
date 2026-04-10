@@ -133,7 +133,7 @@ const xpWin     = document.getElementById('xp-win');
 const _v        = new THREE.Vector3();
 
 // Posição de foco esperada da câmera (deve bater com camera.js → posicaoFocada)
-const _posicaoFocadaRef = new THREE.Vector3(0, 1.85, 2.1);
+const _posicaoFocadaRef = new THREE.Vector3(0, 1.85, 3.3);
 
 function fitOverlay() {
     if (!telaMesh) return;
