@@ -32,10 +32,11 @@ export function criarTelaInterativa() {
     //   monitor.position.y = 1.7  →  tela.position.set(0, 0.05, 0.91) (local do monitor)
     //   monitor.rotation.x = -0.05
     // Em world-space aproximado:
-    // monitor.position.y = 1.9, screen local y = 0.05 → world Y ≈ 1.95
-    // monitor BoxGeometry depth = 1.8 → frente em Z = +0.9 (world)
-    // screen local z = 0.91 → world Z = 0.9 + 0.91 = 1.81
-    objetoCSS.position.set(0, 1.95, 1.81);
+    // Posição calculada matematicamente do world-space da PlaneGeometry:
+    // monitor.position.y=1.9, rotation.x=-0.05, screen local (0, 0.05, 0.91)
+    // worldY = 1.9 + 0.05*cos(-0.05) - 0.91*sin(-0.05) ≈ 1.9954
+    // worldZ = 0.05*sin(-0.05) + 0.91*cos(-0.05)        ≈ 0.9064
+    objetoCSS.position.set(0, 1.9954, 0.9064);
 
     // Inclina levemente igual ao monitor (rotation.x = -0.05)
     objetoCSS.rotation.x = -0.05;
