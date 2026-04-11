@@ -1334,3 +1334,12 @@ body.modo-jogo * {
     color: #555; font-size: .9em; background: #f8f8f4;
 }
 #proj-viewer-blocked a { color: #316AC5; font-weight: bold; }
+
+.avatar {
+  width: 72px;        /* ajuste o tamanho como preferir */
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;  /* recorta a foto sem distorcer */
+  border: 2px solid #316AC5;
+  flex-shrink: 0;
+}
