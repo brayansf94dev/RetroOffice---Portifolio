@@ -32,7 +32,10 @@ export function criarTelaInterativa() {
     //   monitor.position.y = 1.7  →  tela.position.set(0, 0.05, 0.91) (local do monitor)
     //   monitor.rotation.x = -0.05
     // Em world-space aproximado:
-    objetoCSS.position.set(0, 1.97, 0.91);
+    // monitor.position.y = 1.9, screen local y = 0.05 → world Y ≈ 1.95
+    // monitor BoxGeometry depth = 1.8 → frente em Z = +0.9 (world)
+    // screen local z = 0.91 → world Z = 0.9 + 0.91 = 1.81
+    objetoCSS.position.set(0, 1.95, 1.81);
 
     // Inclina levemente igual ao monitor (rotation.x = -0.05)
     objetoCSS.rotation.x = -0.05;
